@@ -1,0 +1,81 @@
+<?php
+
+namespace Mapudo\Bundle\GuzzleBundle\Middleware;
+
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\MessageFormatter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
+/**
+ * Class LogMiddleware
+ *
+ * @category Middleware
+ * @package  Mapudo\Bundle\GuzzleBundle\Middleware
+ * @author   Theo Tzaferis <theodoros.tzaferis@mapudo.com>
+ * @link     http://www.mapudo.com
+ */
+class LogMiddleware
+{
+    /** @var LoggerInterface */
+    protected $logger;
+
+    /** @var MessageFormatter */
+    protected $formatter;
+
+    /** @var NormalizerInterface */
+    protected $normalizer;
+
+    /**
+     * LogMiddleware constructor.
+     *
+     * @param LoggerInterface     $logger
+     * @param MessageFormatter    $formatter
+     * @param NormalizerInterface $normalizer
+     */
+    public function __construct(LoggerInterface $logger, MessageFormatter $formatter, NormalizerInterface $normalizer)
+    {
+        $this->logger = $logger;
+        $this->formatter = $formatter;
+        $this->normalizer = $normalizer;
+    }
+
+    /**
+     * Log each request
+     * @return \Closure
+     */
+    public function log(): \Closure
+    {
+        $logger    = $this->logger;
+        $formatter = $this->formatter;
+
+        return function (callable $handler) use ($logger, $formatter) {
+            return function (RequestInterface $request, array $options) use ($handler, $logger, $formatter) {
+                return $handler($request, $options)->then(
+                    function (ResponseInterface $response) use ($logger, $request, $formatter) {
+                        $message = $formatter->format($request, $response);
+                        $request->getBody()->rewind();
+                        $context = [
+                            'request' => $this->normalizer->normalize($request),
+                            'response' => $this->normalizer->normalize($response)
+                        ];
+                        $logger->info($message, $context);
+
+                        return $response;
+                    },
+                    function ($reason) use ($logger, $request, $formatter) {
+                        $response = $reason instanceof RequestException ? $reason->getResponse() : null;
+                        $message  = $formatter->format($request, $response, $reason);
+                        $context  = compact('request', 'response');
+
+                        $logger->notice($message, $context);
+
+                        return \GuzzleHttp\Promise\rejection_for($reason);
+                    }
+                );
+            };
+        };
+    }
+}

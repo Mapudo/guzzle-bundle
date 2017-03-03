@@ -1,0 +1,9 @@
+# This file shows a sample middleware configuration for the guzzle library
+services:
+    nonguzzle.event.stuff:
+        tags:
+            - { name: kernel.event_listener, event: no.guzzle.event, client: test_client}
+    guzzle.event.stuff:
+        tags:
+            - { name: kernel.event_listener, event: guzzle_event.pre_transaction, client: test_client }
+

@@ -1,0 +1,6 @@
+# This file shows a sample middleware configuration for the guzzle library
+services:
+    guzzle.middleware.stuff:
+        tags:
+            - { name: guzzle.middleware, method: addMiddlewareStuff, client: test_client }
+

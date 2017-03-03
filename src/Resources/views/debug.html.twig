@@ -1,0 +1,43 @@
+{% extends "WebProfilerBundle:Profiler:layout.html.twig" %}
+
+{% block toolbar %}
+    {% set icon %}
+        {{ include("@Guzzle/Icons/logo.svg.twig") }}
+        <span class="sf-toolbar-status sf-toolbar-status-{{ collector.requestCount == 0 ? 'grey' : 'green' }}">{{ collector.requestCount }}</span>
+    {% endset %}
+
+    {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <b>Requests</b>
+            <span class="sf-toolbar-status">{{ collector.requestCount }}</span>
+        </div>
+    {% endset %}
+
+    {% include "WebProfilerBundle:Profiler:toolbar_item.html.twig" with { "link": profiler_url } %}
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon">
+            {{ include("@Guzzle/Icons/logo.svg.twig") }}
+        </span>
+        <strong>Guzzle</strong>
+        <span class="count">
+            <span>{{ collector.requestCount }}</span>
+        </span>
+    </span>
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ asset('bundles/guzzle/css/bootstrap.min.css') }}" />
+    <script src="{{ asset('bundles/guzzle/scripts/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ asset('bundles/guzzle/scripts/bootstrap.min.js') }}"></script>
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/guzzle/css/profiler_reset.css') }}?v={{ random(4787845241) }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/guzzle/css/style.css') }}?v={{ random(4787845241) }}" />
+{% endblock %}
+
+{% block panel %}
+    <h2>Logged requests</h2>
+    {% include 'GuzzleBundle::profiler.html.twig' with { 'collector': collector } %}
+{% endblock %}

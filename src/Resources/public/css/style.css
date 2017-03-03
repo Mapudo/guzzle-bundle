@@ -1,0 +1,27 @@
+.request-uri {
+    text-decoration: underline;
+}
+
+.request-uri:hover {
+    cursor: pointer;
+}
+
+.panel-body__heading {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.panel-body pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 0;
+}
+
+.panel-body textarea {
+    width: 100%;
+    min-height: 100px;
+    background-color: #222;
+    color: white;
+    font-size: 11px;
+    font-family: monospace;
+}

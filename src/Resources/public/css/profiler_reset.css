@@ -1,0 +1,33 @@
+/* This file is used to reset settings modified by bootstrap or symfony */
+* {
+    box-sizing: initial;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+}
+
+.container::before, .container::after {
+    display: none;
+}
+
+.container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.label {
+    text-align: left;
+    line-height: 1.4;
+}
+
+.label-success {
+    background-color: #5cb85c;
+}
+
+.label-info {
+    background-color: #5bc0de;
+}
+
+.label-danger {
+    background-color: #d9534f;
+}
