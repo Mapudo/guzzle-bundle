@@ -1,7 +1,7 @@
 {
   "name": "mapudo/guzzle-bundle",
-  "license": "proprietary",
-  "description": "Integrates Guzzle into Symfony project and adds support for middleware",
+  "license": "MIT",
+  "description": "The Mapudo GuzzleBundle allows integrating Guzzle into Symfony projects",
   "require": {
     "php":                          "^7.0",
     "guzzlehttp/guzzle":            "~6.0",
