@@ -70,7 +70,8 @@ class SymfonyProfilerHandler extends AbstractProcessingHandler
         $message = new Message();
         $message
             ->setRequest($request)
-            ->setMessage($record['message'] ?? null);
+            ->setMessage($record['message'] ?? null)
+            ->setClient($record['context']['client'] ?? null);
 
         $this->requestDataCollector->addMessage($message);
     }

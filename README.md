@@ -143,6 +143,7 @@ monolog:
 ```
 
 After adding this handler you need to rebuild the assets so your Profiler is styled, e.g. with `assets:install`.
+Here you can select which client's request to be shown.
 ![Symfony Profiler](assets/images/profiler_screenshot.png)
 
 

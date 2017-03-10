@@ -2,108 +2,132 @@
     <p><b>No calls have been made/logged in this request</b></p>
 {% else %}
     <div id="guzzle_profiler">
-        {% for i, message in collector.requests %}
-            <div class="row request_{{ i }}">
-                <div class="col-xs-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            {% set labelClass = 'default' %}
-                            {% set statusCode = message.request.response.statusCode %}
-                            {% if statusCode >= 200 and statusCode < 300 %}
-                                {% set labelClass = 'success' %}
-                            {% elseif statusCode >= 300 and statusCode < 400 %}
-                                {% set labelClass = 'info' %}
-                            {% elseif statusCode >= 400 %}
-                                {% set labelClass = 'danger' %}
-                            {% endif %}
-                            <span class="label label-{{ labelClass }}">{{ message.request.method }}: {{ message.request.response.reasonPhrase }} ({{ message.request.response.statusCode }})</span>
-                            <span class="request-uri">{{ message.request.url }}</span>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-md-5">
+                        <h2>Logged requests</h2>
+                    </div>
+                    <div class="col-xs-12 col-md-6" style="float: right;">
+                        <div class="client-selector">
+                            <b>Clients</b><br>
+                            {% for clientName in collector.requests|keys %}
+                                <label style="margin-right: 10px;">
+                                    <input type="checkbox" checked value="{{ clientName }}">
+                                    {{ clientName }}
+                                </label>
+                            {% endfor %}
                         </div>
-                        <div class="panel-body" style="display: none">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="row">
-                                <div class="col-xs-12 panel-body__heading">
-                                    <b>General</b>
-                                </div>
+        {% for clientName, requests in collector.requests %}
+            {% for message in requests %}
+                <div class="row" data-client="{{ clientName }}">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                {% set labelClass = 'default' %}
+                                {% set statusCode = message.request.response.statusCode %}
+                                {% if statusCode >= 200 and statusCode < 300 %}
+                                    {% set labelClass = 'success' %}
+                                {% elseif statusCode >= 300 and statusCode < 400 %}
+                                    {% set labelClass = 'info' %}
+                                {% elseif statusCode >= 400 %}
+                                    {% set labelClass = 'danger' %}
+                                {% endif %}
+                                <span class="label label-{{ labelClass }}">{{ message.request.method }}: {{ message.request.response.reasonPhrase }} ({{ message.request.response.statusCode }})</span>
+                                <span class="request-uri">{{ message.request.url }}</span>
+                                <span class="label label-default label-client">{{ clientName }}</span>
                             </div>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>Guzzle Message</em>
-                                </div>
-                                <div class="col-xs-9 right">
-                                    <pre>{{ message.message }}</pre>
-                                </div>
-                            </div>
+                            <div class="panel-body" style="display: none">
 
-                            <div class="row">
-                                <div class="col-xs-12 panel-body__heading">
-                                    <b>Request</b>
+                                <div class="row">
+                                    <div class="col-xs-12 panel-body__heading">
+                                        <b>General</b>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>HTTP Protocol version</em>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>Guzzle Message</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                        <pre>{{ message.message }}</pre>
+                                    </div>
                                 </div>
-                                <div class="col-xs-9 right">
-                                    {{ message.request.protocolVersion }}
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>Headers</em>
-                                </div>
-                                <div class="col-xs-9 right">
-                                    {{ dump(message.request.headers) }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>Body</em>
-                                </div>
-                                <div class="col-xs-9 right">
-                                    <textarea readonly class="requestBody">
-                                        {{ message.request.body }}
-                                    </textarea>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-xs-12 panel-body__heading">
-                                    <b>Response</b>
+                                <div class="row">
+                                    <div class="col-xs-12 panel-body__heading">
+                                        <b>Request</b>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>HTTP Protocol version</em>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>HTTP Protocol version</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                        {{ message.request.protocolVersion }}
+                                    </div>
                                 </div>
-                                <div class="col-xs-9 right">
-                                    {{ message.request.response.protocolVersion }}
+                                <br>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>Headers</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                        {{ dump(message.request.headers) }}
+                                    </div>
                                 </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>Headers</em>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>Body</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                <textarea readonly class="requestBody">
+                                    {{ message.request.body }}
+                                </textarea>
+                                    </div>
                                 </div>
-                                <div class="col-xs-9 right">
-                                    {{ dump(message.request.response.headers) }}
+
+                                <div class="row">
+                                    <div class="col-xs-12 panel-body__heading">
+                                        <b>Response</b>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-2">
-                                    <em>Body</em>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>HTTP Protocol version</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                        {{ message.request.response.protocolVersion }}
+                                    </div>
                                 </div>
-                                <div class="col-xs-9 right">
-                                    <textarea readonly class="responseBody">
-                                    {{ message.request.response.body }}
-                                    </textarea>
+                                <br>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>Headers</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                        {{ dump(message.request.response.headers) }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <em>Body</em>
+                                    </div>
+                                    <div class="col-xs-9 right">
+                                <textarea readonly class="responseBody">
+                                {{ message.request.response.body }}
+                                </textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         {% endfor %}
     </div>
     <script>
@@ -123,5 +147,14 @@
             $(this).val(parseJson($(this).val()));
         });
 
+        $('.client-selector :checkbox').change(function () {
+            $('.client-selector :checkbox').each(function () {
+                if (!this.checked ) {
+                    $('.row[data-client="' + $(this).val() + '"]').hide();
+                } else {
+                    $('.row[data-client="' + $(this).val() + '"]').show();
+                }
+            });
+        });
     </script>
 {% endif %}

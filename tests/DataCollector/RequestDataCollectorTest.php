@@ -47,7 +47,10 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
             ->subject
             ->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
 
-        $this->assertSame([$firstMessage->reveal(), $secondMessage->reveal()], $this->subject->getRequests());
+        $this->assertSame(
+            ['generic' => [$firstMessage->reveal(), $secondMessage->reveal()]],
+            $this->subject->getRequests()
+        );
         $this->assertSame(2, $this->subject->getRequestCount());
     }
 

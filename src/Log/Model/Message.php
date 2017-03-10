@@ -17,6 +17,9 @@ class Message
     /** @var Request|null */
     protected $request;
 
+    /** @var string|null */
+    protected $client;
+
     /**
      * @return null|string
      */
@@ -50,6 +53,24 @@ class Message
     public function setRequest(Request $request = null): Message
     {
         $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param null|string $client
+     * @return Message
+     */
+    public function setClient(string $client = null): Message
+    {
+        $this->client = $client;
         return $this;
     }
 }
