@@ -85,9 +85,9 @@
                                         <em>Body</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                <textarea readonly class="requestBody">
-                                    {{ message.request.body }}
-                                </textarea>
+                                    <textarea readonly class="requestBody">
+                                        {{ message.request.body }}
+                                    </textarea>
                                     </div>
                                 </div>
 
@@ -118,9 +118,9 @@
                                         <em>Body</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                <textarea readonly class="responseBody">
-                                {{ message.request.response.body }}
-                                </textarea>
+                                    <textarea readonly class="responseBody">
+                                        {{ message.request.response.body }}
+                                    </textarea>
                                     </div>
                                 </div>
                             </div>
@@ -149,11 +149,7 @@
 
         $('.client-selector :checkbox').change(function () {
             $('.client-selector :checkbox').each(function () {
-                if (!this.checked ) {
-                    $('.row[data-client="' + $(this).val() + '"]').hide();
-                } else {
-                    $('.row[data-client="' + $(this).val() + '"]').show();
-                }
+                $('.row[data-client="' + $(this).val() + '"]').toggle(this.checked)
             });
         });
     </script>
