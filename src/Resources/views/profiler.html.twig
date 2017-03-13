@@ -131,25 +131,27 @@
         {% endfor %}
     </div>
     <script>
-        $('.panel-heading').click(function (event) {
-            $(event.currentTarget).next().toggle('fast');
-        });
+        $(document).ready(function () {
+            $('.panel-heading').click(function (event) {
+                $(event.currentTarget).next().toggle('fast');
+            });
 
-        var parseJson = function (json) {
-            try {
-                return JSON.stringify(JSON.parse(json), null, 4);
-            } catch (exception) {
-                return json;
-            }
-        };
+            var parseJson = function (json) {
+                try {
+                    return JSON.stringify(JSON.parse(json), null, 4);
+                } catch (exception) {
+                    return json;
+                }
+            };
 
-        $.each($('.responseBody, .requestBody'), function () {
-            $(this).val(parseJson($(this).val()));
-        });
+            $.each($('.responseBody, .requestBody'), function () {
+                $(this).val(parseJson($(this).val()));
+            });
 
-        $('.client-selector :checkbox').change(function () {
-            $('.client-selector :checkbox').each(function () {
-                $('.row[data-client="' + $(this).val() + '"]').toggle(this.checked)
+            $('.client-selector :checkbox').change(function () {
+                $('.client-selector :checkbox').each(function () {
+                    $('.row[data-client="' + $(this).val() + '"]').toggle(this.checked)
+                });
             });
         });
     </script>
