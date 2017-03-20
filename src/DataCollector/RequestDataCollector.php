@@ -35,7 +35,7 @@ class RequestDataCollector extends DataCollector
     {
         return array_sum(array_map(function (array $requests) {
             return count($requests);
-        }, $this->data['requests']));
+        }, $this->getRequests()));
     }
 
     /**
@@ -55,7 +55,7 @@ class RequestDataCollector extends DataCollector
      */
     public function getRequests(): array
     {
-        return $this->data['requests'];
+        return $this->data['requests'] ?? [];
     }
 
     /**

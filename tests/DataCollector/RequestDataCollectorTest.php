@@ -54,6 +54,34 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(2, $this->subject->getRequestCount());
     }
 
+    public function testGetRequests()
+    {
+        // Since we didn't initialize the RequestDataCollector at all an empty array should be returned here.
+        $requests = $this
+            ->subject
+            ->getRequests();
+
+        $this->assertEmpty($requests);
+
+        /** @var ObjectProphecy|Message $message */
+        $message = $this->prophesize(Message::class);
+        $this
+            ->subject
+            ->addMessage($message->reveal());
+
+        $this
+            ->subject
+            ->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
+
+        // Now after collecting the messages, we should get a result.
+        $requests = $this
+            ->subject
+            ->getRequests();
+
+        $this->assertCount(1, $requests);
+        $this->assertSame($message->reveal(), array_shift($requests['generic']));
+    }
+
     /**
      * Asserts that the name is set correctly
      */
