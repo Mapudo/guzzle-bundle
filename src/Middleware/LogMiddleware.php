@@ -28,6 +28,9 @@ class LogMiddleware
     /** @var NormalizerInterface */
     protected $normalizer;
 
+    /** @var string|null */
+    protected $clientName;
+
     /**
      * LogMiddleware constructor.
      *
@@ -59,7 +62,8 @@ class LogMiddleware
                         $request->getBody()->rewind();
                         $context = [
                             'request' => $this->normalizer->normalize($request),
-                            'response' => $this->normalizer->normalize($response)
+                            'response' => $this->normalizer->normalize($response),
+                            'client' => $this->clientName,
                         ];
                         $logger->info($message, $context);
 
@@ -77,5 +81,17 @@ class LogMiddleware
                 );
             };
         };
+    }
+
+    /**
+     * Sets the client name. Used to distinguish between clients.
+     *
+     * @param string $clientName
+     * @return LogMiddleware
+     */
+    public function setClientName(string $clientName): LogMiddleware
+    {
+        $this->clientName = $clientName;
+        return $this;
     }
 }

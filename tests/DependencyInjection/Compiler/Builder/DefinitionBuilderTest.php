@@ -111,7 +111,8 @@ class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetLogMiddlewareDefinition()
     {
-        $logMiddleware = $this->subject->getLogMiddlewareDefinition();
+        $client = 'client';
+        $logMiddleware = $this->subject->getLogMiddlewareDefinition($client);
 
         $this->assertCount(3, $logMiddleware->getArguments());
         $this->assertSame('%mapudo.guzzle.middleware.log_middleware.class%', $logMiddleware->getClass());
@@ -125,5 +126,8 @@ class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($arguments[$i], $reference->__toString());
             $this->assertSame(ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE, $reference->getInvalidBehavior());
         }
+
+        $this->assertCount(1, $logMiddleware->getMethodCalls());
+        $this->assertTrue($logMiddleware->hasMethodCall('setClientName'));
     }
 }

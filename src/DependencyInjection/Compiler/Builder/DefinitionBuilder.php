@@ -44,7 +44,7 @@ class DefinitionBuilder
         $container->setDefinition($eventServiceName, $this->getEventMiddlewareDefinition($clientName));
 
         $logServiceName = sprintf('guzzle_bundle.middleware.log.%s', $clientName);
-        $container->setDefinition($logServiceName, $this->getLogMiddlewareDefinition());
+        $container->setDefinition($logServiceName, $this->getLogMiddlewareDefinition($clientName));
 
         $eventExpression  = new Expression(sprintf('service("%s").dispatch()', $eventServiceName));
         $logExpression = new Expression(sprintf('service("%s").log()', $logServiceName));
@@ -70,13 +70,19 @@ class DefinitionBuilder
 
     /**
      * Creates a definition of the log middleware
+     *
+     * @param string $clientName
      * @return Definition
      */
-    public function getLogMiddlewareDefinition(): Definition
+    public function getLogMiddlewareDefinition(string $clientName): Definition
     {
-        return (new Definition('%mapudo.guzzle.middleware.log_middleware.class%'))
+        $logMiddleware = (new Definition('%mapudo.guzzle.middleware.log_middleware.class%'))
             ->addArgument(new Reference('monolog.logger.guzzle'))
             ->addArgument(new Reference('guzzle_bundle.formatter'))
             ->addArgument(new Reference('mapudo_bundle_guzzle.serializer'));
+
+        $logMiddleware->addMethodCall('setClientName', [$clientName]);
+
+        return $logMiddleware;
     }
 }

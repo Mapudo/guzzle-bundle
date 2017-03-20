@@ -99,6 +99,7 @@ class SymfonyProfilerHandlerTest extends \PHPUnit_Framework_TestCase
             ->addMessage(Argument::that(function (Message $message) use ($request, $recordMessage) {
                 $this->assertSame($request, $message->getRequest());
                 $this->assertSame($recordMessage, $message->getMessage());
+                $this->assertNull($message->getClient());
                 return true;
             }))
             ->willReturn($this->requestDataCollector->reveal())

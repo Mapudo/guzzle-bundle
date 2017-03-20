@@ -38,6 +38,5 @@
 {% endblock %}
 
 {% block panel %}
-    <h2>Logged requests</h2>
     {% include 'GuzzleBundle::profiler.html.twig' with { 'collector': collector } %}
 {% endblock %}

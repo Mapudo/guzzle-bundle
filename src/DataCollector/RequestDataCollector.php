@@ -33,7 +33,9 @@ class RequestDataCollector extends DataCollector
      */
     public function getRequestCount(): int
     {
-        return count($this->data['requests']);
+        return array_sum(array_map(function (array $requests) {
+            return count($requests);
+        }, $this->getRequests()));
     }
 
     /**
@@ -44,7 +46,7 @@ class RequestDataCollector extends DataCollector
      */
     public function addMessage(Message $message): RequestDataCollector
     {
-        $this->messages[] = $message;
+        $this->messages[$message->getClient() ?? 'generic'][] = $message;
         return $this;
     }
 
@@ -53,7 +55,7 @@ class RequestDataCollector extends DataCollector
      */
     public function getRequests(): array
     {
-        return $this->data['requests'];
+        return $this->data['requests'] ?? [];
     }
 
     /**
