@@ -77,7 +77,9 @@
                                         <em>Headers</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                        {{ dump(message.request.headers) }}
+                                        <div class="dump">
+                                            {{ dump(message.request.headers) }}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -110,7 +112,9 @@
                                         <em>Headers</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                        {{ dump(message.request.response.headers) }}
+                                        <div class="dump">
+                                            {{ dump(message.request.response.headers) }}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -118,7 +122,7 @@
                                         <em>Body</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                        <textarea readonly class="responseBody">
+                                        <textarea rows="10" readonly class="responseBody">
                                             {{ message.request.response.body }}
                                         </textarea>
                                     </div>

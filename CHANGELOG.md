@@ -11,6 +11,7 @@ Note: This is WIP and will be edited when the other issues for the 1.1.0 milesto
 - Requests that are logged with the LogMiddleware, will now be logged with a client name
 - Symfony Profiler Handler now allows filtering by client
 - Symfony Profiler Handler now shows the client as a label on the request
+- Symfony profiler now looks even better in Symfony3
 
 ## 2017-03-03 
 
