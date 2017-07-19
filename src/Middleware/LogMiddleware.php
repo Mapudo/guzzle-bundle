@@ -67,6 +67,8 @@ class LogMiddleware
                         ];
                         $logger->info($message, $context);
 
+                        $response->getBody()->rewind();
+
                         return $response;
                     },
                     function ($reason) use ($logger, $request, $formatter) {
