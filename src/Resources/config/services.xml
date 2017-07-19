@@ -47,5 +47,10 @@
             <argument type="service" id="mapudo_bundle_guzzle.data_collector.request_data_collector"/>
             <argument type="service" id="mapudo_bundle_guzzle.serializer"/>
         </service>
+
+        <!-- Twig -->
+        <service id="mapudo_bundle_guzzle.twig.guzzle_extension" class="Mapudo\Bundle\GuzzleBundle\Twig\GuzzleExtension">
+            <tag name="twig.extension"/>
+        </service>
     </services>
 </container>

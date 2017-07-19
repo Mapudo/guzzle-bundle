@@ -87,9 +87,15 @@
                                         <em>Body</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                        <textarea readonly class="requestBody">
-                                            {{ message.request.body }}
-                                        </textarea>
+                                        {% if('application/json' in message.request.headers['Content-Type']) %}
+                                            <div class="dump">
+                                                {{ dump(message.request.body|json_decode(true)) }}
+                                            </div>
+                                        {% else %}
+                                            <textarea readonly class="requestBody">
+                                                {{ message.request.body }}
+                                            </textarea>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -122,9 +128,15 @@
                                         <em>Body</em>
                                     </div>
                                     <div class="col-xs-9 right">
-                                        <textarea rows="10" readonly class="responseBody">
-                                            {{ message.request.response.body }}
-                                        </textarea>
+                                        {% if('application/json' in message.request.response.headers['Content-Type']) %}
+                                            <div class="dump">
+                                                {{ dump(message.request.response.body|json_decode(true)) }}
+                                            </div>
+                                        {% else %}
+                                            <textarea rows="10" readonly class="responseBody">
+                                                {{ message.request.response.body }}
+                                            </textarea>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
