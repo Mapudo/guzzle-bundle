@@ -1,0 +1,46 @@
+language: php
+sudo: false
+
+cache:
+  directories:
+    - .phpunit
+    - $HOME/.composer/cache/files
+
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+
+env:
+  global:
+    - PHPUNIT_FLAGS="--coverage-text"
+    - COMPOSER_FLAGS="--no-interaction --no-suggest --no-progress --prefer-dist --prefer-stable"
+    - SYMFONY_VERSION=""
+
+env:
+  - COMPOSER_FLAGS="$COMPOSER_FLAGS --prefer-lowest"
+  - COMPOSER_FLAGS=$COMPOSER_FLAGS
+  - SYMFONY_VERSION="2.8.*"
+  - SYMFONY_VERSION="3.0.*"
+  - SYMFONY_VERSION="3.1.*"
+  - SYMFONY_VERSION="3.2.*"
+  - SYMFONY_VERSION="3.3.*"
+  - SYMFONY_VERSION="3.4.*"
+
+allow_failures:
+  - php: nightly
+
+matrix:
+  fast_finish: true
+
+before_install:
+  - travis_retry composer self-update
+  - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then phpenv config-rm xdebug.ini; fi
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update --dev symfony/symfony "$SYMFONY_VERSION"; fi
+
+install:
+  - composer update $COMPOSER_FLAGS
+
+script:
+  - vendor/bin/phpunit $PHPUNIT_FLAGS
