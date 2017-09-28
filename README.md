@@ -177,8 +177,8 @@ to dispatch events and one to log with given handlers.
 
 #### Add your own Middleware 
 The CompilerPass searches for services which are tagged with 
-`guzzle.middleware`. A tag `method` is also required to define which 
-method should be executed. You also need to add the tag `client` with 
+`guzzle.middleware`. A tag `method` is optional to define which 
+method should be executed. You need to add the tag `client` with 
 the name of the client. However, if you want to create a middleware for 
 all clients you can omit the tag.
 
