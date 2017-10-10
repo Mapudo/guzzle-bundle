@@ -1,7 +1,24 @@
 {
   "name": "mapudo/guzzle-bundle",
-  "license": "MIT",
   "description": "The Mapudo GuzzleBundle allows integrating Guzzle into Symfony projects",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Theo Tzaferis",
+      "email": "theodoros.tzaferis@mapudo.com",
+      "homepage": "http://www.mapudo.com"
+    },
+    {
+      "name": "Community contributions",
+      "homepage": "https://github.com/Mapudo/guzzle-bundle/contributors"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/Mapudo/guzzle-bundle/issues",
+    "source": "https://github.com/Mapudo/guzzle-bundle",
+    "docs": "https://github.com/Mapudo/guzzle-bundle/blob/master/README.md"
+  },
   "require": {
     "php":                          "^7.0",
     "guzzlehttp/guzzle":            "~6.0",
@@ -17,6 +34,9 @@
   "require-dev": {
     "phpunit/phpunit": "~5.5",
     "symfony/config":  "2.3|~3.0"
+  },
+  "scripts": {
+    "test": "phpunit"
   },
   "autoload": {
     "psr-4": { "Mapudo\\Bundle\\GuzzleBundle\\": "src/" },

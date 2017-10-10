@@ -36,7 +36,12 @@ class DefinitionBuilder
 
         foreach ($middleware as $id => $tags) {
             $attributes = reset($tags);
-            $middlewareExpression = new Expression(sprintf('service("%s").%s()', $id, $attributes['method']));
+
+            if (!empty($attributes['method'])) {
+                $middlewareExpression = new Expression(sprintf('service("%s").%s()', $id, $attributes['method']));
+            } else {
+                $middlewareExpression = new Expression(sprintf('service("%s")', $id));
+            }
             $handler->addMethodCall('push', [$middlewareExpression]);
         }
 
