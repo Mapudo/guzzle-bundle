@@ -41,7 +41,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         if (!isset($config['guzzle']['clients']['test_client']['request_options']['auth'])) {
             // Since we defined how the content of the "auth" option looks like in the configuration
             // by default an empty array is added
-            $config['guzzle']['clients']['test_client']['request_options']['auth'] = [];
+            $config['guzzle']['clients']['test_client']['request_options']['auth'] = null;
         }
 
         $this->assertEquals($config['guzzle'], $processedConfig);
@@ -53,6 +53,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function dataProviderSingleClientConfigWithOptions(): array
     {
-        return [[Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/sample_config.yml'))]];
+        return [
+            [Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/sample_config.yml'))],
+            [Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/sample_config_auth_string.yml'))],
+            [Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/sample_config_auth_array.yml'))],
+        ];
     }
 }

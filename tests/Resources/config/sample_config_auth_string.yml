@@ -1,0 +1,36 @@
+# This file shows a sample configuration made in Symfony's config.yml
+guzzle:
+    clients:
+        test_client:
+            base_uri: 'https://example.com/path'
+            headers:
+                Accept: 'application/json'
+                Accept-Language: 'de'
+                X-Auth: 'token'
+            request_options:
+                allow_redirects: true
+                auth: "oauth"
+                cert:
+                    - '/path/to/cert.pem'
+                    - 'password'
+                connect_timeout: 10.5
+                decode_content: 'gzip'
+                delay: 1
+                expect: 1048576
+                force_ip_resolve: 'v6'
+                http_errors: true
+                proxy:
+                    http: 'httpProxy'
+                    https: 'httpsProxy'
+                    no: 'anything_else'
+                query:
+                    foo: bar
+                read_timeout: 23
+                ssl_key:
+                    - '/path/to/cert.pem'
+                    - 'password'
+                stream: true
+                synchronous: false
+                verify: true
+                timeout: 5
+                version: 1.1
