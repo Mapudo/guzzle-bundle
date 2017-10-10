@@ -175,11 +175,14 @@ or just do what you want.
 This bundle comes with two middleware services already implemented. One 
 to dispatch events and one to log with given handlers.
 
-#### Add your own Middleware 
+#### Add your own Middleware
+The bundle supports registering Middlewares by using `__invoke()` or creating a custom
+`method`.
+ 
 The CompilerPass searches for services which are tagged with 
 `guzzle.middleware`. A tag `method` is optional to define which 
-method should be executed. You need to add the tag `client` with 
-the name of the client. However, if you want to create a middleware for 
+method should be executed if you don't use `__invoke()` in your middleware. 
+You need to add the tag `client` with the name of the client. However, if you want to create a middleware for 
 all clients you can omit the tag.
 
 YAML

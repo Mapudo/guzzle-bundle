@@ -6,8 +6,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [2.0.0] - 2017-09-28
 ### Changed
-- **[BC break]** - When registering middleware `method` is not required any more, as middleware can work with `__invoke` (eg. [guzzle/oauth-subscriber](https://github.com/guzzle/oauth-subscriber))
 - **[BC break]** - Annotated `auth` in client `request_options` can also be a string, due to [guzzle/oauth-subscriber](https://github.com/guzzle/oauth-subscriber)
+- When registering middleware `method` is not required any more, as middleware can work with `__invoke` (e.g. [guzzle/oauth-subscriber](https://github.com/guzzle/oauth-subscriber))
 
 ## [1.1.0] - 2017-03-10
 ### Changed

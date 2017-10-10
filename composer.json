@@ -36,7 +36,7 @@
     "symfony/config":  "2.3|~3.0"
   },
   "scripts": {
-    "test": "phpunit tests/"
+    "test": "phpunit"
   },
   "autoload": {
     "psr-4": { "Mapudo\\Bundle\\GuzzleBundle\\": "src/" },
