@@ -4,6 +4,10 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [Unreleased]
+### Changed
+- Changed isset handling with default value to php 7
+
 ## [2.0.0] - 2017-09-28
 ### Changed
 - **[BC break]** - Annotated `auth` in client `request_options` can also be a string, due to [guzzle/oauth-subscriber](https://github.com/guzzle/oauth-subscriber)
