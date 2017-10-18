@@ -45,7 +45,7 @@ class SerializerPass implements CompilerPassInterface
         $sortedServices = array();
         foreach ($services as $serviceId => $tags) {
             foreach ($tags as $attributes) {
-                $priority = isset($attributes['priority']) ? $attributes['priority'] : 0;
+                $priority = $attributes['priority'] ?? 0;
                 $sortedServices[$priority][] = new Reference($serviceId);
             }
         }
