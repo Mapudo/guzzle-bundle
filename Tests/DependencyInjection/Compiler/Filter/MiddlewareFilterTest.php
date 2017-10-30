@@ -1,4 +1,5 @@
 <?php
+
 namespace Mapudo\Bundle\GuzzleBundle\Tests\DependencyInjection\Compiler\Filter;
 
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Filter\MiddlewareFilter;
@@ -31,9 +32,9 @@ class MiddlewareFilterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataProviderFilter
      *
-     * @param array  $middleware
+     * @param array $middleware
      * @param string $clientName
-     * @param array  $expectedResult
+     * @param array $expectedResult
      */
     public function testFilter(array $middleware, string $clientName, array $expectedResult)
     {
@@ -63,7 +64,37 @@ class MiddlewareFilterTest extends \PHPUnit_Framework_TestCase
         }
 
         return [
-            [$middleware, 'test_client', $middleware],
+            [
+                $middleware,
+                'test_client',
+                [
+                    'guzzle.middleware.stuff' => [
+                        [
+                            'name' => 'guzzle.middleware',
+                            'method' => 'addMiddlewareStuff',
+                            'client' => 'test_client'
+                        ],
+                        [
+                            'name' => 'guzzle.middleware',
+                            'method' => 'addOtherMiddlewareStuff',
+                            'client' => 'test_client'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                $middleware,
+                'test_client2',
+                [
+                    'guzzle.middleware.stuff' => [
+                        [
+                            'name' => 'guzzle.middleware',
+                            'method' => 'addMiddlewareStuff',
+                            'client' => 'test_client2'
+                        ]
+                    ]
+                ]
+            ],
             [$middleware, 'false_client', []],
         ];
     }

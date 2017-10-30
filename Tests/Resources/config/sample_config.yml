@@ -33,3 +33,5 @@ guzzle:
                 verify: true
                 timeout: 5
                 version: 1.1
+        test_client2:
+            base_uri: 'https://example.com/path'

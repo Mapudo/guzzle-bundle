@@ -3,4 +3,6 @@ services:
     guzzle.middleware.stuff:
         tags:
             - { name: guzzle.middleware, method: addMiddlewareStuff, client: test_client }
+            - { name: guzzle.middleware, method: addOtherMiddlewareStuff, client: test_client }
+            - { name: guzzle.middleware, method: addMiddlewareStuff, client: test_client2 }
 
