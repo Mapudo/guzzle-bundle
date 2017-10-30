@@ -55,7 +55,7 @@ class MiddlewareFilterTest extends \PHPUnit_Framework_TestCase
     public function dataProviderFilter(): array
     {
         $parsedMiddleware = Yaml::parse(
-            file_get_contents(__DIR__ . '/../../../Resources/config/sample_middleware.yml')
+            file_get_contents(__DIR__ . '/../../../Resources/config/sample_multiple_middleware.yml')
         )['services'];
 
         $middleware = [];
