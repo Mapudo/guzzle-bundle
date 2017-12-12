@@ -69,7 +69,7 @@ class RequestDataCollector extends DataCollector
     /**
      * @inheritdoc
      */
-    public function reset()
+    public function reset(): void
     {
         $this->data = [];
         $this->messages = [];

@@ -79,6 +79,7 @@ class ClientInitializationCompilerPassTest extends \PHPUnit_Framework_TestCase
                     Argument::exact('guzzle.client.' . $clientName),
                     Argument::that(function (Definition $definition) use ($options) {
                         $this->assertSame('%guzzle_http.client.class%', $definition->getClass());
+                        $this->assertTrue($definition->isPublic());
                         $this->assertCount(1, $definition->getArguments());
                         $clientArguments = $definition->getArgument(0);
 
