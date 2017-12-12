@@ -32,7 +32,7 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
         $loader->load('services.xml');
 
         $processor = new Processor();
-        $configuration = new Configuration($this->getAlias());
+        $configuration = $this->getConfiguration($configs, $container);
         $config = $processor->processConfiguration($configuration, $configs);
 
         $container->setParameter('mapudo.guzzle.config', $config);
