@@ -25,10 +25,16 @@ class GuzzleExtensionTest extends \PHPUnit_Framework_TestCase
         /** @var ObjectProphecy|ContainerBuilder $container */
         $container = $this->prophesize(ContainerBuilder::class);
         $container->hasExtension(Argument::any())->shouldBeCalled();
-        $container->addResource(Argument::any())->shouldBeCalled();
         $container->getParameterBag()->shouldBeCalled()->willReturn($this->prophesize(ParameterBag::class)->reveal());
         $container->setDefinition(Argument::any(), Argument::any())->shouldBeCalled();
         $container->setParameter(Argument::exact('mapudo.guzzle.config'), Argument::any())->shouldBeCalled();
+        $container
+            ->fileExists(Argument::that(function (string $path) {
+                $expectedFileName = 'services.xml';
+                $this->assertSame($expectedFileName, substr($path, strlen($path) - strlen($expectedFileName)));
+                return true;
+            }))
+            ->willReturn(true);
 
         $guzzleExtension = new GuzzleExtension();
         $guzzleExtension->load([], $container->reveal());
