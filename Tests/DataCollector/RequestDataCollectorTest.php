@@ -89,4 +89,19 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame('guzzle', $this->subject->getName());
     }
+
+    public function testReset(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $response = $this->prophesize(Response::class);
+
+        // add a message and check whether the message is added to data
+        $this->subject->addMessage((new Message())->setMessage('my message'));
+        $this->subject->collect($request->reveal(), $response->reveal());
+        $this->assertCount(1, $this->subject->getRequests());
+
+        // reset the DataCollector and check whether the requests are empty
+        $this->subject->reset();
+        $this->assertCount(0, $this->subject->getRequests());
+    }
 }
