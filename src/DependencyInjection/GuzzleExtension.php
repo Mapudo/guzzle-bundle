@@ -48,4 +48,12 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
             $container->prependExtensionConfig('monolog', ['channels' => ['guzzle']]);
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfiguration(array $config, ContainerBuilder $container): Configuration
+    {
+        return new Configuration($this->getAlias());
+    }
 }

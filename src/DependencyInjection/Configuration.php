@@ -61,6 +61,7 @@ class Configuration implements ConfigurationInterface
                         ->prototype('scalar')->end()
                     ->end()
                     ->arrayNode('request_options')
+                        ->info('Details: http://docs.guzzlephp.org/en/stable/request-options.html')
                         ->children()
                             ->variableNode('allow_redirects')->end()
                             ->variableNode('auth')->defaultNull()->end()

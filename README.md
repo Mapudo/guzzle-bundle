@@ -91,7 +91,7 @@ set on individual requests:
 Clients defined in the configuration are then registered by the bundle's 
 CompilerPass and you can afterwards access them from the container by name.
 For the above cases, we would have two clients which we can access with 
-`guzzle.clients.test_client` and `guzzle.clients.another_client`.
+`guzzle.client.test_client` and `guzzle.client.another_client`.
 
 ### Making requests
 Making requests is easy and essentially the same as using Guzzle directly.
