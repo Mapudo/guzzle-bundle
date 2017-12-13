@@ -67,6 +67,7 @@ class ClientInitializationCompilerPass implements CompilerPassInterface
 
             $client = new Definition('%guzzle_http.client.class%');
             $client->addArgument($clientArgument);
+            $client->setPublic(true);
 
             $clientName = sprintf('%s.client.%s', 'guzzle', $clientName);
             $container->setDefinition($clientName, $client);

@@ -18,14 +18,14 @@ use Symfony\Component\HttpFoundation\Response;
 class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var RequestDataCollector */
-    protected $subject;
+    protected $requestDataCollector;
 
     /**
      * @inheritdoc
      */
     protected function setUp()
     {
-        $this->subject = new RequestDataCollector();
+        $this->requestDataCollector = new RequestDataCollector();
     }
 
     /**
@@ -39,26 +39,26 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
         $secondMessage = $this->prophesize(Message::class);
 
         $this
-            ->subject
+            ->requestDataCollector
             ->addMessage($firstMessage->reveal())
             ->addMessage($secondMessage->reveal());
 
         $this
-            ->subject
+            ->requestDataCollector
             ->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
 
         $this->assertSame(
             ['generic' => [$firstMessage->reveal(), $secondMessage->reveal()]],
-            $this->subject->getRequests()
+            $this->requestDataCollector->getRequests()
         );
-        $this->assertSame(2, $this->subject->getRequestCount());
+        $this->assertSame(2, $this->requestDataCollector->getRequestCount());
     }
 
     public function testGetRequests()
     {
         // Since we didn't initialize the RequestDataCollector at all an empty array should be returned here.
         $requests = $this
-            ->subject
+            ->requestDataCollector
             ->getRequests();
 
         $this->assertEmpty($requests);
@@ -66,16 +66,16 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
         /** @var ObjectProphecy|Message $message */
         $message = $this->prophesize(Message::class);
         $this
-            ->subject
+            ->requestDataCollector
             ->addMessage($message->reveal());
 
         $this
-            ->subject
+            ->requestDataCollector
             ->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
 
         // Now after collecting the messages, we should get a result.
         $requests = $this
-            ->subject
+            ->requestDataCollector
             ->getRequests();
 
         $this->assertCount(1, $requests);
@@ -87,6 +87,21 @@ class RequestDataCollectorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName()
     {
-        $this->assertSame('guzzle', $this->subject->getName());
+        $this->assertSame('guzzle', $this->requestDataCollector->getName());
+    }
+
+    public function testReset(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $response = $this->prophesize(Response::class);
+
+        // add a message and check whether the message is added to data
+        $this->requestDataCollector->addMessage((new Message())->setMessage('my message'));
+        $this->requestDataCollector->collect($request->reveal(), $response->reveal());
+        $this->assertCount(1, $this->requestDataCollector->getRequests());
+
+        // reset the DataCollector and check whether the requests are empty
+        $this->requestDataCollector->reset();
+        $this->assertCount(0, $this->requestDataCollector->getRequests());
     }
 }

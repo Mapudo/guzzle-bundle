@@ -65,4 +65,13 @@ class RequestDataCollector extends DataCollector
     {
         return 'guzzle';
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function reset(): void
+    {
+        $this->data = [];
+        $this->messages = [];
+    }
 }

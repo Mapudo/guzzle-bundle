@@ -4,9 +4,10 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## [Unreleased]
+## [2.1.0]
 ### Changed
 - Changed isset handling with default value to php 7
+- Added Symfony 4 support
 
 ## [2.0.0] - 2017-09-28
 ### Changed

@@ -32,7 +32,7 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
         $loader->load('services.xml');
 
         $processor = new Processor();
-        $configuration = new Configuration($this->getAlias());
+        $configuration = $this->getConfiguration($configs, $container);
         $config = $processor->processConfiguration($configuration, $configs);
 
         $container->setParameter('mapudo.guzzle.config', $config);
@@ -47,5 +47,13 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
         if (isset($bundles['MonologBundle'])) {
             $container->prependExtensionConfig('monolog', ['channels' => ['guzzle']]);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfiguration(array $config, ContainerBuilder $container): Configuration
+    {
+        return new Configuration($this->getAlias());
     }
 }
