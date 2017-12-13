@@ -7,7 +7,7 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ## [2.1.0]
 ### Changed
 - Changed isset handling with default value to php 7
-- Added symfony 4 support
+- Added Symfony 4 support
 
 ## [2.0.0] - 2017-09-28
 ### Changed
