@@ -18,7 +18,7 @@
 
         <!-- Data collector -->
         <service id="mapudo_bundle_guzzle.data_collector.request_data_collector" class="Mapudo\Bundle\GuzzleBundle\DataCollector\RequestDataCollector" public="false">
-            <tag name="data_collector" template="GuzzleBundle::debug" id="guzzle"/>
+            <tag name="data_collector" template="@Guzzle/debug.html.twig" id="guzzle"/>
         </service>
 
         <!-- Serializer -->

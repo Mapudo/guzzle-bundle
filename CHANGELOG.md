@@ -4,6 +4,10 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [2.1.1] - 2018-01-11
+### Changed 
+- Changed the template include paths
+
 ## [2.1.0] - 2017-12-13
 ### Changed
 - Changed isset handling with default value to php 7
