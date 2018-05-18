@@ -66,6 +66,7 @@ class LogMiddleware
                             'client' => $this->clientName,
                         ];
                         $logger->info($message, $context);
+                        $request->getBody()->rewind();
 
                         return $response;
                     },
