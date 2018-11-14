@@ -65,21 +65,14 @@ class LogMiddleware
                 return $handler($request, $options)->then(
                     function (ResponseInterface $response) use ($logger, $request, $formatter, &$duration) {
                         $message = $formatter->format($request, $response);
-                        $request->getBody()->rewind();
-                        $context = [
-                            'request' => $this->normalizer->normalize($request),
-                            'response' => $this->normalizer->normalize($response),
-                            'client' => $this->clientName,
-                            'duration' => $duration,
-                        ];
-                        $logger->info($message, $context);
+                        $logger->info($message, $this->buildContext($request, $response, $duration));
 
                         return $response;
                     },
                     function ($reason) use ($logger, $request, $formatter, &$duration) {
                         $response = $reason instanceof RequestException ? $reason->getResponse() : null;
                         $message  = $formatter->format($request, $response, $reason);
-                        $logger->notice($message, compact('request', 'response', 'duration'));
+                        $logger->error($message, $this->buildContext($request, $response, $duration));
 
                         return \GuzzleHttp\Promise\rejection_for($reason);
                     }
@@ -98,5 +91,19 @@ class LogMiddleware
     {
         $this->clientName = $clientName;
         return $this;
+    }
+
+    private function buildContext(?RequestInterface $request, ?ResponseInterface $response, float $duration)
+    {
+        $request->getBody()->rewind();
+        $context = [
+            'request' => $this->normalizer->normalize($request),
+            'response' => $this->normalizer->normalize($response),
+            'client' => $this->clientName,
+            'duration' => $duration,
+        ];
+        $context['response']['body']['contents'] = '';
+
+        return $context;
     }
 }
