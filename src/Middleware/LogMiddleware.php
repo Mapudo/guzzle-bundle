@@ -93,16 +93,21 @@ class LogMiddleware
         return $this;
     }
 
-    private function buildContext(RequestInterface $request, ResponseInterface $response, float $duration = null): array
-    {
+    private function buildContext(
+        RequestInterface $request,
+        ResponseInterface $response = null,
+        float $duration = null
+    ): array {
         $request->getBody()->rewind();
         $context = [
             'request' => $this->normalizer->normalize($request),
-            'response' => $this->normalizer->normalize($response),
             'client' => $this->clientName,
             'duration' => $duration,
         ];
-        $context['response']['body']['contents'] = '';
+
+        if ($response !== null) {
+            $context['response'] = $this->normalizer->normalize($response);
+        }
 
         return $context;
     }
