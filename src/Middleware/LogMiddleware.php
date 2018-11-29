@@ -4,6 +4,7 @@ namespace Mapudo\Bundle\GuzzleBundle\Middleware;
 
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -56,25 +57,22 @@ class LogMiddleware
 
         return function (callable $handler) use ($logger, $formatter) {
             return function (RequestInterface $request, array $options) use ($handler, $logger, $formatter) {
+                $duration = null;
+                $options['on_stats'] = function (TransferStats $stats) use (&$duration) {
+                    $duration = $stats->getTransferTime();
+                };
+
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($logger, $request, $formatter) {
+                    function (ResponseInterface $response) use ($logger, $request, $formatter, $duration) {
                         $message = $formatter->format($request, $response);
-                        $request->getBody()->rewind();
-                        $context = [
-                            'request' => $this->normalizer->normalize($request),
-                            'response' => $this->normalizer->normalize($response),
-                            'client' => $this->clientName,
-                        ];
-                        $logger->info($message, $context);
+                        $logger->info($message, $this->buildContext($request, $response, $duration));
 
                         return $response;
                     },
-                    function ($reason) use ($logger, $request, $formatter) {
+                    function ($reason) use ($logger, $request, $formatter, $duration) {
                         $response = $reason instanceof RequestException ? $reason->getResponse() : null;
                         $message  = $formatter->format($request, $response, $reason);
-                        $context  = compact('request', 'response');
-
-                        $logger->notice($message, $context);
+                        $logger->error($message, $this->buildContext($request, $response, $duration));
 
                         return \GuzzleHttp\Promise\rejection_for($reason);
                     }
@@ -93,5 +91,24 @@ class LogMiddleware
     {
         $this->clientName = $clientName;
         return $this;
+    }
+
+    private function buildContext(
+        RequestInterface $request,
+        ResponseInterface $response = null,
+        float $duration = null
+    ): array {
+        $request->getBody()->rewind();
+        $context = [
+            'request' => $this->normalizer->normalize($request),
+            'client' => $this->clientName,
+            'duration' => $duration,
+        ];
+
+        if ($response !== null) {
+            $context['response'] = $this->normalizer->normalize($response);
+        }
+
+        return $context;
     }
 }
