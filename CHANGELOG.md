@@ -4,7 +4,7 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## [unreleased] - 2018-11-19
+## [2.2.0] - 2018-11-29
 ### Changed
 - Add `duration` property to be logged in `LogMiddleware` to keep track of the request duration
 
