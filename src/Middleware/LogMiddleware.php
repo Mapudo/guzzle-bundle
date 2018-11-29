@@ -63,13 +63,13 @@ class LogMiddleware
                 };
 
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($logger, $request, $formatter, &$duration) {
+                    function (ResponseInterface $response) use ($logger, $request, $formatter, $duration) {
                         $message = $formatter->format($request, $response);
                         $logger->info($message, $this->buildContext($request, $response, $duration));
 
                         return $response;
                     },
-                    function ($reason) use ($logger, $request, $formatter, &$duration) {
+                    function ($reason) use ($logger, $request, $formatter, $duration) {
                         $response = $reason instanceof RequestException ? $reason->getResponse() : null;
                         $message  = $formatter->format($request, $response, $reason);
                         $logger->error($message, $this->buildContext($request, $response, $duration));
