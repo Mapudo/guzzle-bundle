@@ -96,7 +96,7 @@ class LogMiddleware
     private function buildContext(
         RequestInterface $request,
         ResponseInterface $response = null,
-        float $duration = null
+        float &$duration = null
     ): array {
         $request->getBody()->rewind();
         $context = [
