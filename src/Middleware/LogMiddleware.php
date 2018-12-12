@@ -63,6 +63,9 @@ class LogMiddleware
                 };
 
                 return $handler($request, $options)->then(
+                    // `$duration` is passed by reference because at the time when the callback
+                    // is registered the variable `$duration` is `null`.
+                    // The stats callback is executed before the custom promise callbacks are executed.
                     function (ResponseInterface $response) use ($logger, $request, $formatter, &$duration) {
                         $message = $formatter->format($request, $response);
                         $logger->info($message, $this->buildContext($request, $response, $duration));
