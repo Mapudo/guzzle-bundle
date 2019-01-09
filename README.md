@@ -30,7 +30,7 @@ existing bundles and our issues were not addressed by their maintainers.
 
 ## Requirements
 * PHP 7.0 and newer
-* Symfony ~2.8|~3.0
+* Symfony ~2.8|~3.0|~4.0
 
 ## Install
 
