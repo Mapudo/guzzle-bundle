@@ -35,14 +35,14 @@ class DefinitionBuilder
         $handler->setFactory(['%guzzle_http.handler_stack.class%', 'create']);
 
         foreach ($middleware as $id => $tags) {
-            $attributes = reset($tags);
-
-            if (!empty($attributes['method'])) {
-                $middlewareExpression = new Expression(sprintf('service("%s").%s()', $id, $attributes['method']));
-            } else {
-                $middlewareExpression = new Expression(sprintf('service("%s")', $id));
+            foreach ($tags as $attributes) {
+                if (!empty($attributes['method'])) {
+                    $middlewareExpression = new Expression(sprintf('service("%s").%s()', $id, $attributes['method']));
+                } else {
+                    $middlewareExpression = new Expression(sprintf('service("%s")', $id));
+                }
+                $handler->addMethodCall('push', [$middlewareExpression]);
             }
-            $handler->addMethodCall('push', [$middlewareExpression]);
         }
 
         $eventServiceName = sprintf('guzzle_bundle.middleware.event_dispatch.%s', $clientName);

@@ -28,10 +28,16 @@ class MiddlewareFilter
      */
     public function filter(ContainerBuilder $container, string $clientName): array
     {
-        $middleware = $container->findTaggedServiceIds('guzzle.middleware');
-        return array_filter($middleware, function ($middleware) use ($clientName) {
-            $options = reset($middleware);
-            return !array_key_exists('client', $options) || $clientName === $options['client'];
-        });
+        $middleware = [];
+
+        foreach ($container->findTaggedServiceIds('guzzle.middleware') as $service => $tags) {
+            foreach ($tags as $options) {
+                if (!array_key_exists('client', $options) || $clientName === $options['client']) {
+                    $middleware[$service][] = $options;
+                }
+            }
+        }
+
+        return $middleware;
     }
 }

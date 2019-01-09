@@ -40,7 +40,8 @@ class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
         $container = $this->prophesize(ContainerBuilder::class);
 
         $middleware = ['test_middleware' => [
-           ['method' => 'attach']
+           ['method' => 'attach'],
+           ['method' => 'attach2'],
         ]];
 
         $handler = $this->subject->getHandlerDefinition($container->reveal(), $clientName, $middleware);
@@ -51,7 +52,7 @@ class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
 
         $methodCalls = $handler->getMethodCalls();
         // Count is the number of the given middleware + the default event and log middleware expressions
-        $this->assertCount(3, $methodCalls);
+        $this->assertCount(4, $methodCalls);
 
         $customMiddlewareCall = array_shift($methodCalls);
         $this->assertSame('push', array_shift($customMiddlewareCall));
@@ -60,6 +61,14 @@ class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
         $customMiddlewareExpression = array_shift($customMiddlewareExpressions);
         $this->assertInstanceOf(Expression::class, $customMiddlewareExpression);
         $this->assertSame('service("test_middleware").attach()', $customMiddlewareExpression->__toString());
+
+        $customMiddlewareCall = array_shift($methodCalls);
+        $this->assertSame('push', array_shift($customMiddlewareCall));
+        /** @var Expression[] $customMiddlewareExpressions */
+        $customMiddlewareExpressions = array_shift($customMiddlewareCall);
+        $customMiddlewareExpression = array_shift($customMiddlewareExpressions);
+        $this->assertInstanceOf(Expression::class, $customMiddlewareExpression);
+        $this->assertSame('service("test_middleware").attach2()', $customMiddlewareExpression->__toString());
 
         $logMiddlewareCall = array_shift($methodCalls);
         $this->assertSame('push', array_shift($logMiddlewareCall));
