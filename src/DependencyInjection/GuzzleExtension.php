@@ -9,27 +9,15 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
 
 /**
- * Class GuzzleExtension
- *
- * @category Extension class
- * @package  Mapudo\Bundle\GuzzleBundle\DependencyInjection
- * @author   Theo Tzaferis <theodoros.tzaferis@mapudo.com>
- * @link     http://www.mapudo.com
+ * @author Theo Tzaferis <theodoros.tzaferis@mapudo.com>
+ * @link   http://www.mapudo.com
  */
 class GuzzleExtension extends Extension implements PrependExtensionInterface
 {
-    /**
-     * Loads a specific configuration.
-     *
-     * @param array            $configs An array of configuration values
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
+        $loader->load('services.yaml');
 
         $processor = new Processor();
         $configuration = $this->getConfiguration($configs, $container);
@@ -38,10 +26,7 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('mapudo.guzzle.config', $config);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         $bundles = $container->getParameter('kernel.bundles');
         if (isset($bundles['MonologBundle'])) {
@@ -49,9 +34,6 @@ class GuzzleExtension extends Extension implements PrependExtensionInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getConfiguration(array $config, ContainerBuilder $container): Configuration
     {
         return new Configuration($this->getAlias());

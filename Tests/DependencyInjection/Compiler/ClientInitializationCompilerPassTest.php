@@ -1,7 +1,8 @@
 <?php
 namespace Mapudo\Bundle\GuzzleBundle\Tests\DependencyInjection\Compiler;
 
-use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\DefinitionBuilder;
+use GuzzleHttp\Client;
+use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\HandlerDefinitionBuilder;
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\ClientInitializationCompilerPass;
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Filter\EventListenerFilter;
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Filter\MiddlewareFilter;
@@ -73,12 +74,13 @@ class ClientInitializationCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->willReturn($middlewareFilter->reveal());
 
         foreach ($config['clients'] as $clientName => $options) {
+            /** @noinspection PhpParamsInspection */
             $this
                 ->container
                 ->setDefinition(
                     Argument::exact('guzzle.client.' . $clientName),
                     Argument::that(function (Definition $definition) use ($options) {
-                        $this->assertSame('%guzzle_http.client.class%', $definition->getClass());
+                        $this->assertSame(Client::class, $definition->getClass());
                         $this->assertTrue($definition->isPublic());
                         $this->assertCount(1, $definition->getArguments());
                         $clientArguments = $definition->getArgument(0);
@@ -154,7 +156,7 @@ class ClientInitializationCompilerPassTest extends \PHPUnit_Framework_TestCase
     {
         $subject = new ClientInitializationCompilerPass();
 
-        $this->assertInstanceOf(DefinitionBuilder::class, $subject->getDefinitionBuilder());
+        $this->assertInstanceOf(HandlerDefinitionBuilder::class, $subject->getDefinitionBuilder());
         $this->assertInstanceOf(EventListenerFilter::class, $subject->getEventListenerFilter());
         $this->assertInstanceOf(MiddlewareFilter::class, $subject->getMiddlewareFilter());
     }
