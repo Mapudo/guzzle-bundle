@@ -146,6 +146,24 @@ After adding this handler you need to rebuild the assets so your Profiler is sty
 Here you can select which client's request to be shown.
 ![Symfony Profiler](assets/images/profiler_screenshot.png)
 
+#### Log into specific channels
+
+Per default the LogMiddleware logs into the "guzzle" channel. If you want that a different handler is used (dependent on the channel) you can define a service tag for this.  
+
+YAML
+```yaml
+mapudo_frontend.mapudo_api.log_middleware:
+    class: Mapudo\Bundle\GuzzleBundle\Middleware\LogMiddleware
+    tags:
+        - { name: guzzle.middleware, method: log, client: mapudo_api, channel: timings }
+```
+
+As you can see, the tag now contain a "channel" node. If configured like this, the guzzle client `mapudo_api` will have the `LogMiddleware` as a middleware injected that uses a/multiple logger which log into the timings channel.
+
+**Important**  
+> Please note, that the service id of the LogMiddleware must contain the name `log_middleware` since the compiler pass checks if the service definition contains this name to retrieve the channel.
+
+
 
 #### Add your own Logging
 This bundle uses Symfony's normalizer to normalize the request and response objects before passing them to the logger.

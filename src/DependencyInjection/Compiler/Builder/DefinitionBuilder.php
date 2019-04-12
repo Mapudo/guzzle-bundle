@@ -1,10 +1,13 @@
 <?php
 namespace Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder;
-
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
+use function array_key_exists;
+use function reset;
+use function sprintf;
+use function strpos;
 
 /**
  * Class DefinitionBuilder
@@ -34,9 +37,16 @@ class DefinitionBuilder
         $handler = new Definition('%guzzle_http.handler_stack.class%');
         $handler->setFactory(['%guzzle_http.handler_stack.class%', 'create']);
 
+        // The default channel we want to log to is guzzle, however the user can alter this
+        // by submitting the "channel" in the tags when registering the log middleware
+        $logChannel = 'guzzle';
         foreach ($middleware as $id => $tags) {
             $attributes = reset($tags);
 
+            // Currently untested code -> Must be tested in the code refactor PR
+            if (array_key_exists('channel', $attributes) && strpos($id, 'log_middleware') !== false) {
+                $logChannel = $attributes['channel'];
+            }
             if (!empty($attributes['method'])) {
                 $middlewareExpression = new Expression(sprintf('service("%s").%s()', $id, $attributes['method']));
             } else {
@@ -49,8 +59,7 @@ class DefinitionBuilder
         $container->setDefinition($eventServiceName, $this->getEventMiddlewareDefinition($clientName));
 
         $logServiceName = sprintf('guzzle_bundle.middleware.log.%s', $clientName);
-        $container->setDefinition($logServiceName, $this->getLogMiddlewareDefinition($clientName));
-
+        $container->setDefinition($logServiceName, $this->getLogMiddlewareDefinition($clientName, $logChannel));
         $eventExpression  = new Expression(sprintf('service("%s").dispatch()', $eventServiceName));
         $logExpression = new Expression(sprintf('service("%s").log()', $logServiceName));
 
@@ -79,10 +88,10 @@ class DefinitionBuilder
      * @param string $clientName
      * @return Definition
      */
-    public function getLogMiddlewareDefinition(string $clientName): Definition
+    public function getLogMiddlewareDefinition(string $clientName, string $logChannel = 'guzzle'): Definition
     {
         $logMiddleware = (new Definition('%mapudo.guzzle.middleware.log_middleware.class%'))
-            ->addArgument(new Reference('monolog.logger.guzzle'))
+            ->addArgument(new Reference(sprintf('monolog.logger.%s', $logChannel)))
             ->addArgument(new Reference('guzzle_bundle.formatter'))
             ->addArgument(new Reference('mapudo_bundle_guzzle.serializer'));
 
