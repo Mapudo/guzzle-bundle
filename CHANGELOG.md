@@ -4,6 +4,10 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [2.3.0] - 2019-04-12
+### Added
+- Added functionality to define channels when registering LogMiddleware. This allows a user, to inject a specific logger into the LogMiddleware dependent on the channel.
+
 ## [2.2.1] - 2018-12-07
 ### Changed
 - Fix `duration` in `LogMiddleware` parameter due to it needs to be passed by reference to a method to work properly
