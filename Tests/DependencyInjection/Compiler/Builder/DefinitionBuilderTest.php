@@ -1,117 +1,133 @@
 <?php
 namespace Mapudo\Bundle\GuzzleBundle\Tests\DependencyInjection\Compiler\Builder;
 
-use function array_shift;
-use GuzzleHttp\HandlerStack;
-use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\HandlerDefinitionBuilder;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\DefinitionBuilder;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class DefinitionBuilderTest extends TestCase
+/**
+ * Class DefinitionBuilderTest
+ *
+ * @category Compiler test
+ * @package  Mapudo\Bundle\GuzzleBundle\Tests\DependencyInjection\Compiler
+ * @author   Theo Tzaferis <theodoros.tzaferis@mapudo.com>
+ * @link     http://www.mapudo.com
+ */
+class DefinitionBuilderTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var HandlerDefinitionBuilder */
+    /** @var DefinitionBuilder */
     protected $subject;
 
-    protected function setUp(): void
+    /**
+     * @inheritdoc
+     */
+    protected function setUp()
     {
-        $this->subject = new HandlerDefinitionBuilder();
+        $this->subject = new DefinitionBuilder();
     }
 
-    public function dataProviderBuild(): array
-    {
-        return [
-            [
-                [
-                    'test_middleware' => [['method' => 'attach']],
-                    'some_log_middleware' => [['method' => 'log']],
-                ],
-                'service("some_log_middleware").log()',
-                'guzzle'
-            ],
-            [
-                [
-                    'test_middleware' => [['method' => 'attach']],
-                    'some_log_middleware_custom_channel' => [['channel' => 'timings']],
-                ],
-                'service("some_log_middleware_custom_channel")',
-                'timings'
-            ],
-        ];
-    }
-
-    /** @dataProvider dataProviderBuild */
-    public function testBuild(array $middleware, string $expectedMiddlewareExpression, string $expectedChannel): void
+    /**
+     * Test case to assert the handler definition is created correctly.
+     */
+    public function testGetHandlerDefinition()
     {
         $clientName = 'clientName';
 
         /** @var ContainerBuilder|ObjectProphecy $container */
         $container = $this->prophesize(ContainerBuilder::class);
-        /** @noinspection PhpParamsInspection */
-        $container
-            ->setDefinition('guzzle_bundle.middleware.event_dispatch.clientName', Argument::type(Definition::class))
-            ->shouldBeCalled();
 
-        /** @noinspection PhpParamsInspection */
-        $container
-            ->setDefinition(
-                'guzzle_bundle.middleware.log.clientName',
-                Argument::that(static function (Definition $definition) use ($expectedChannel) {
-                    Assert::assertSame('monolog.logger.' . $expectedChannel, (string)$definition->getArgument(0));
-                    return true;
-                })
-            )
-            ->shouldBeCalled();
+        $middleware = ['test_middleware' => [
+           ['method' => 'attach']
+        ]];
 
-        $handler = $this->subject->build($container->reveal(), $clientName, $middleware);
+        $handler = $this->subject->getHandlerDefinition($container->reveal(), $clientName, $middleware);
 
         // Test basic stuff
-        Assert::assertSame(HandlerStack::class, $handler->getClass());
-        Assert::assertSame([HandlerStack::class, 'create'], $handler->getFactory());
+        $this->assertSame('%guzzle_http.handler_stack.class%', $handler->getClass());
+        $this->assertSame(['%guzzle_http.handler_stack.class%', 'create'], $handler->getFactory());
 
         $methodCalls = $handler->getMethodCalls();
-        // Expected count is the number of the given middleware + the default event and log middleware expressions
-        Assert::assertCount(4, $methodCalls);
+        // Count is the number of the given middleware + the default event and log middleware expressions
+        $this->assertCount(3, $methodCalls);
 
         $customMiddlewareCall = array_shift($methodCalls);
-        Assert::assertSame('push', array_shift($customMiddlewareCall));
+        $this->assertSame('push', array_shift($customMiddlewareCall));
         /** @var Expression[] $customMiddlewareExpressions */
         $customMiddlewareExpressions = array_shift($customMiddlewareCall);
         $customMiddlewareExpression = array_shift($customMiddlewareExpressions);
-        Assert::assertInstanceOf(Expression::class, $customMiddlewareExpression);
-        Assert::assertSame('service("test_middleware").attach()', $customMiddlewareExpression->__toString());
-
-        $customLogMiddleware = array_shift($methodCalls);
-        Assert::assertSame('push', array_shift($customLogMiddleware));
-        $customLogMiddleWareExpressions = array_shift($customLogMiddleware);
-        $customLogMiddleWareExpression = array_shift($customLogMiddleWareExpressions);
-        Assert::assertInstanceOf(Expression::class, $customLogMiddleWareExpression);
-        Assert::assertSame($expectedMiddlewareExpression, (string)$customLogMiddleWareExpression);
+        $this->assertInstanceOf(Expression::class, $customMiddlewareExpression);
+        $this->assertSame('service("test_middleware").attach()', $customMiddlewareExpression->__toString());
 
         $logMiddlewareCall = array_shift($methodCalls);
-        Assert::assertSame('push', array_shift($logMiddlewareCall));
+        $this->assertSame('push', array_shift($logMiddlewareCall));
         /** @var Expression[] $logMiddlewareExpressions */
         $logMiddlewareExpressions = array_shift($logMiddlewareCall);
         $logMiddlewareExpression = array_shift($logMiddlewareExpressions);
-        Assert::assertInstanceOf(Expression::class, $logMiddlewareExpression);
-        Assert::assertSame(
+        $this->assertInstanceOf(Expression::class, $logMiddlewareExpression);
+        $this->assertSame(
             'service("guzzle_bundle.middleware.log.clientName").log()',
             $logMiddlewareExpression->__toString()
         );
 
         $eventDispatchMiddlewareCall = array_shift($methodCalls);
-        Assert::assertSame('unshift', array_shift($eventDispatchMiddlewareCall));
+        $this->assertSame('unshift', array_shift($eventDispatchMiddlewareCall));
         /** @var Expression[] $eventDispatchMiddlewareExpressions */
         $eventDispatchMiddlewareExpressions = array_shift($eventDispatchMiddlewareCall);
         $eventDispatchMiddlewareExpression = array_shift($eventDispatchMiddlewareExpressions);
-        Assert::assertInstanceOf(Expression::class, $eventDispatchMiddlewareExpression);
-        Assert::assertSame(
+        $this->assertInstanceOf(Expression::class, $eventDispatchMiddlewareExpression);
+        $this->assertSame(
             'service("guzzle_bundle.middleware.event_dispatch.clientName").dispatch()',
             $eventDispatchMiddlewareExpression->__toString()
         );
+    }
+
+    /**
+     * Test case to assert the event middleware definition is created correctly.
+     */
+    public function testGetEventMiddlewareDefinition()
+    {
+        $clientName = 'clientName';
+        $eventMiddleware = $this->subject->getEventMiddlewareDefinition($clientName);
+
+        $this->assertCount(2, $eventMiddleware->getArguments());
+        $this->assertSame('%mapudo.guzzle.middleware.event_dispatch_middleware.class%', $eventMiddleware->getClass());
+
+        // Assert the Reference has been set correctly
+        /** @var Reference $reference */
+        $reference = $eventMiddleware->getArgument(0);
+        $this->assertInstanceOf(Reference::class, $reference);
+        $this->assertSame('event_dispatcher', $reference->__toString());
+        $this->assertSame(ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE, $reference->getInvalidBehavior());
+
+        // Assert the client name
+        $this->assertSame($clientName, $eventMiddleware->getArgument(1));
+    }
+
+    /**
+     * Test case to assert the log middleware definition is created correctly.
+     */
+    public function testGetLogMiddlewareDefinition()
+    {
+        $client = 'client';
+        $logMiddleware = $this->subject->getLogMiddlewareDefinition($client);
+
+        $this->assertCount(3, $logMiddleware->getArguments());
+        $this->assertSame('%mapudo.guzzle.middleware.log_middleware.class%', $logMiddleware->getClass());
+
+        // Assert the references have been set correctly
+        $arguments = ['monolog.logger.guzzle', 'guzzle_bundle.formatter', 'mapudo_bundle_guzzle.serializer'];
+        for ($i = 0; $i < 3; $i++) {
+            /** @var Reference $reference */
+            $reference = $logMiddleware->getArgument($i);
+            $this->assertInstanceOf(Reference::class, $reference);
+            $this->assertSame($arguments[$i], $reference->__toString());
+            $this->assertSame(ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE, $reference->getInvalidBehavior());
+        }
+
+        $this->assertCount(1, $logMiddleware->getMethodCalls());
+        $this->assertTrue($logMiddleware->hasMethodCall('setClientName'));
     }
 }

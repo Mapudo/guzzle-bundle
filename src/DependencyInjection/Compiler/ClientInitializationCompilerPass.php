@@ -1,8 +1,7 @@
 <?php
 namespace Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler;
 
-use GuzzleHttp\Client;
-use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\HandlerDefinitionBuilder;
+use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Builder\DefinitionBuilder;
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Filter\EventListenerFilter;
 use Mapudo\Bundle\GuzzleBundle\DependencyInjection\Compiler\Filter\MiddlewareFilter;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -19,7 +18,7 @@ use Symfony\Component\DependencyInjection\Definition;
  */
 class ClientInitializationCompilerPass implements CompilerPassInterface
 {
-    /** @var HandlerDefinitionBuilder */
+    /** @var DefinitionBuilder */
     protected $definitionBuilder;
 
     /** @var EventListenerFilter */
@@ -33,7 +32,7 @@ class ClientInitializationCompilerPass implements CompilerPassInterface
      */
     public function __construct()
     {
-        $this->definitionBuilder = new HandlerDefinitionBuilder();
+        $this->definitionBuilder = new DefinitionBuilder();
 
         $this->eventListenerFilter = new EventListenerFilter();
         $this->middlewareFilter = new MiddlewareFilter();
@@ -53,7 +52,7 @@ class ClientInitializationCompilerPass implements CompilerPassInterface
 
             $clientArgument = [
                 'base_uri' => $options['base_uri'],
-                'handler' => $this->getDefinitionBuilder()->build($container, $clientName, $middleware)
+                'handler' => $this->getDefinitionBuilder()->getHandlerDefinition($container, $clientName, $middleware)
             ];
 
             if (array_key_exists('headers', $options)) {
@@ -66,7 +65,7 @@ class ClientInitializationCompilerPass implements CompilerPassInterface
                 }
             }
 
-            $client = new Definition(Client::class);
+            $client = new Definition('%guzzle_http.client.class%');
             $client->addArgument($clientArgument);
             $client->setPublic(true);
 
@@ -99,9 +98,9 @@ class ClientInitializationCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * @return HandlerDefinitionBuilder
+     * @return DefinitionBuilder
      */
-    public function getDefinitionBuilder(): HandlerDefinitionBuilder
+    public function getDefinitionBuilder(): DefinitionBuilder
     {
         return $this->definitionBuilder;
     }
