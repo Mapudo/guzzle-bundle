@@ -2,6 +2,7 @@
 
 namespace Mapudo\Bundle\GuzzleBundle\Middleware;
 
+use Closure;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\TransferStats;
@@ -9,6 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use function GuzzleHttp\Promise\rejection_for;
 
 /**
  * Class LogMiddleware
@@ -32,13 +34,6 @@ class LogMiddleware
     /** @var string|null */
     protected $clientName;
 
-    /**
-     * LogMiddleware constructor.
-     *
-     * @param LoggerInterface     $logger
-     * @param MessageFormatter    $formatter
-     * @param NormalizerInterface $normalizer
-     */
     public function __construct(LoggerInterface $logger, MessageFormatter $formatter, NormalizerInterface $normalizer)
     {
         $this->logger = $logger;
@@ -46,11 +41,7 @@ class LogMiddleware
         $this->normalizer = $normalizer;
     }
 
-    /**
-     * Log each request
-     * @return \Closure
-     */
-    public function log(): \Closure
+    public function log(): Closure
     {
         $logger    = $this->logger;
         $formatter = $this->formatter;
@@ -58,7 +49,7 @@ class LogMiddleware
         return function (callable $handler) use ($logger, $formatter) {
             return function (RequestInterface $request, array $options) use ($handler, $logger, $formatter) {
                 $duration = null;
-                $options['on_stats'] = function (TransferStats $stats) use (&$duration) {
+                $options['on_stats'] = static function (TransferStats $stats) use (&$duration) {
                     $duration = $stats->getTransferTime();
                 };
 
@@ -77,19 +68,13 @@ class LogMiddleware
                         $message  = $formatter->format($request, $response, $reason);
                         $logger->error($message, $this->buildContext($request, $response, $duration));
 
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+                        return rejection_for($reason);
                     }
                 );
             };
         };
     }
 
-    /**
-     * Sets the client name. Used to distinguish between clients.
-     *
-     * @param string $clientName
-     * @return LogMiddleware
-     */
     public function setClientName(string $clientName): LogMiddleware
     {
         $this->clientName = $clientName;
@@ -102,6 +87,7 @@ class LogMiddleware
         float $duration = null
     ): array {
         $request->getBody()->rewind();
+        /** @noinspection PhpUnhandledExceptionInspection */
         $context = [
             'request' => $this->normalizer->normalize($request),
             'client' => $this->clientName,
@@ -109,6 +95,7 @@ class LogMiddleware
         ];
 
         if ($response !== null) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             $context['response'] = $this->normalizer->normalize($response);
         }
 

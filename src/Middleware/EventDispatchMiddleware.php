@@ -26,24 +26,12 @@ class EventDispatchMiddleware
     /** @var string */
     protected $clientName;
 
-    /**
-     * EventDispatchMiddleware constructor.
-     *
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string                   $clientName
-     */
     public function __construct(EventDispatcherInterface $eventDispatcher, string $clientName)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->clientName = $clientName;
     }
 
-    /**
-     * Dispatches an event before the transaction is made (i.e. before the response is being gathered)
-     * and another event after the transaction is done (i.e. we now got the response)
-     *
-     * @return Closure
-     */
     public function dispatch(): Closure
     {
         return function (callable $handler) {

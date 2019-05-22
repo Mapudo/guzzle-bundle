@@ -4,6 +4,14 @@ All Notable changes to `mapudo/guzzle-bundle` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [2.4.0] - 2019-05-22
+### Added
+- Added middleware to automatically append api key query parameters.
+- Added more extensive description for middleware
+### Changed
+- Changed code style of middleware classes to fit with newest standards WITHOUT breaking BC
+- Clean up readme
+
 ## [2.3.0] - 2019-04-12
 ### Added
 - Added functionality to define channels when registering LogMiddleware. This allows a user, to inject a specific logger into the LogMiddleware dependent on the channel.
