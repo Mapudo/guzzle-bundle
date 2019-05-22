@@ -100,12 +100,15 @@ available to configure via the config.
 
 ```php
 <?php
+use GuzzleHttp\TransferStats;
+use Symfony\Component\HttpFoundation\Request;
+
 $client = $container->get('guzzle.client.test_client');
-$moreOptions = ['on_stats' => function (\GuzzleHttp\TransferStats $stats) {
+$moreOptions = ['on_stats' => static function (TransferStats $stats) {
     echo $stats->getEffectiveUri() . "\n";
     echo $stats->getTransferTime() . "\n";
 }];
-$client->requestAsync(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/path/without/base_uri', $moreOptions);
+$client->requestAsync(Request::METHOD_GET, '/path/without/base_uri', $moreOptions);
 ```
 
 **Note**: *Clear your cache after adding a new log handler or a middleware 
@@ -174,6 +177,10 @@ For example, to write your own handler, take the response and request array out 
 
 ```php
 <?php
+use Mapudo\Bundle\GuzzleBundle\Log\Model\Request;
+use Mapudo\Bundle\GuzzleBundle\Log\Model\Response;
+
+/** @noinspection PhpUndefinedVariableInspection */
 if ($record['context']) {
     $response = null;
     if (!empty($record['context']['response'])) {
@@ -190,8 +197,43 @@ if ($record['context']) {
 or just do what you want.
 
 ### Middleware
-This bundle comes with two middleware services already implemented. One 
-to dispatch events and one to log with given handlers.
+This bundle comes with multiple middleware services already implemented.
+
+#### Event dispatch middleware
+The event dispatch middleware fires two events. One before the request is sent and one after the request has been sent (i. e. when we have a response). You can hook into these events by listening for
+
+* `guzzle_event.pre_transaction`
+* `guzzle_event.post_transaction`
+
+#### Log middleware
+The log middleware receives a logger as an argument and will use this logger along with it's definition, i.e. in which channel to log, for which level etc. to log BOTH request and response data including duration times for a request.
+
+### Authentication middleware
+This bundle offers middleware that automatically add authentication data to a request.
+#### Api key
+If you make requests to an API that requires an API key for authentication you can register a service definition for the `Mapudo\Bundle\GuzzleBundle\Middleware\Authentication\ApiKeyMiddleware`
+
+This middleware receives two arguments, while the second one is optional.
+
+* First argument is the api key to use
+* Second argument is the query parameter name  that will be used for the key which defaults to `key`.
+
+So let's say you register your middleware like this
+
+```yaml
+services:
+    guzzle.middleware.authentication.api_key:
+        class: Mapudo\Bundle\GuzzleBundle\Middleware\Authentication\ApiKeyMiddleware
+        arguments:
+            - 'totallySecretString'
+            - 'api_key'
+        tags:
+            - { name: guzzle.middleware, method: authenticate, client: test_client }
+```
+
+and a request to `https://api.google.com/search-results` is made, the Middleware would transform the URI to `https://api.google.com/search-results?api_key=totallySecretString`
+
+You can also add your own authentication middleware by implementing the `AuthenticationMiddlewareInterface`
 
 #### Add your own Middleware
 The bundle supports registering Middlewares by using `__invoke()` or creating a custom
