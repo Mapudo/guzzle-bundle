@@ -2,7 +2,7 @@
 namespace Mapudo\Bundle\GuzzleBundle\Events;
 
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class PreTransactionEvent
