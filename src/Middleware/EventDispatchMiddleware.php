@@ -8,7 +8,7 @@ use Mapudo\Bundle\GuzzleBundle\Events\PreTransactionEvent;
 use Mapudo\Bundle\GuzzleBundle\Events\GuzzleTransactionEventListenerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class EventDispatchMiddleware
@@ -55,8 +55,8 @@ class EventDispatchMiddleware
                 $this
                     ->eventDispatcher
                     ->dispatch(
-                        GuzzleTransactionEventListenerInterface::EVENT_PRE_TRANSACTION,
-                        $preTransactionEvent
+                        $preTransactionEvent,
+                        GuzzleTransactionEventListenerInterface::EVENT_PRE_TRANSACTION
                     );
 
                 /** @var PromiseInterface $promise */
@@ -68,8 +68,8 @@ class EventDispatchMiddleware
                         $this
                             ->eventDispatcher
                             ->dispatch(
-                                GuzzleTransactionEventListenerInterface::EVENT_POST_TRANSACTION,
-                                $postTransactionEvent
+                                $postTransactionEvent,
+                                GuzzleTransactionEventListenerInterface::EVENT_POST_TRANSACTION
                             );
 
                         return $postTransactionEvent->getTransaction();

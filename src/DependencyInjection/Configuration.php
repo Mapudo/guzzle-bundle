@@ -33,8 +33,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $builder = new TreeBuilder();
-        $builder->root($this->alias)
+        $builder = new TreeBuilder($this->alias);
+
+        $rootNode = method_exists($builder, 'getRootNode')
+            ? $builder->getRootNode()
+            : $builder->root($this->alias);
+
+        $rootNode
             ->children()
                 ->append($this->createClientsNode())->end()
             ->end();
@@ -49,8 +54,10 @@ class Configuration implements ConfigurationInterface
      */
     private function createClientsNode()
     {
-        $builder = new TreeBuilder();
-        $node    = $builder->root('clients');
+        $builder = new TreeBuilder('clients');
+        $node = method_exists($builder, 'getRootNode')
+            ? $builder->getRootNode()
+            : $builder->root('clients');
 
         $node
             ->useAttributeAsKey('name')

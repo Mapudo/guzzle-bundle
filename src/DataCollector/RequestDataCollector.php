@@ -22,7 +22,7 @@ class RequestDataCollector extends DataCollector
     /**
      * {@inheritdoc}Adds the requests to the data array of the Data Collector
      */
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         $this->data['requests'] = $this->messages;
     }
